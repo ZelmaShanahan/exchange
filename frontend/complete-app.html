@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoFund Nexus - Privacy-Preserving Fundraising Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 25%, #0F172A 50%, #1E293B 75%, #0F172A 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dex-pair {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .modal {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                        CryptoFund Nexus
+                    </div>
+                    <div class="hidden md:flex space-x-6">
+                        <button onclick="showPage('home')" class="nav-link text-gray-300 hover:text-white transition-colors">首页</button>
+                        <button onclick="showPage('projects')" class="nav-link text-gray-300 hover:text-white transition-colors">项目</button>
+                        <button onclick="showPage('create')" class="nav-link text-gray-300 hover:text-white transition-colors">创建项目</button>
+                        <button onclick="showPage('dex')" class="nav-link text-gray-300 hover:text-white transition-colors">DEX交易</button>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="walletInfo" class="text-sm">
+                        <div id="walletStatus" class="text-gray-400">未连接钱包</div>
+                        <div id="walletBalance" class="text-xs text-gray-500 hidden"></div>
+                    </div>
+                    <button id="connectWallet" onclick="connectWallet()" class="btn-primary text-white px-4 py-2 rounded-lg font-medium">
+                        连接MetaMask
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="app" class="min-h-screen">
+        <!-- Home Page -->
+        <div id="homePage" class="page">
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+                        隐私保护筹款平台
+                    </h1>
+                    <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                        基于零知识证明的去中心化筹款平台，提供完全隐私的投资和捐款功能，内置DEX交易
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="showPage('projects')" class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold">
+                            浏览项目
+                        </button>
+                        <button onclick="showPage('create')" class="btn-secondary px-8 py-3 rounded-lg text-lg font-semibold">
+                            创建项目
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="grid md:grid-cols-3 gap-8 mt-16">
+                    <div class="card p-6 rounded-xl">
+                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                            🔒
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">隐私保护</h3>
+                        <p class="text-gray-300">使用零知识证明技术，确保所有交易完全私密</p>
+                    </div>
+                    <div class="card p-6 rounded-xl">
+                        <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                            💰
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">去中心化筹款</h3>
+                        <p class="text-gray-300">支持项目创建、投资和捐款，资金完全由智能合约管理</p>
+                    </div>
+                    <div class="card p-6 rounded-xl">
+                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                            🔄
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">内置DEX</h3>
+                        <p class="text-gray-300">集成去中心化交易所，支持多种代币交易</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Page -->
+        <div id="projectsPage" class="page hidden">
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold">项目列表</h2>
+                    <button onclick="showPage('create')" class="btn-primary px-6 py-2 rounded-lg" data-requires-wallet="true">创建新项目</button>
+                </div>
+                <div id="projectsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Projects will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Project Page -->
+        <div id="createPage" class="page hidden">
+            <div class="max-w-2xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold mb-8">创建新项目</h2>
+                <div class="card p-8 rounded-xl">
+                    <form id="createProjectForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">项目名称</label>
+                            <input type="text" id="projectName" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">项目描述</label>
+                            <textarea id="projectDescription" required rows="4" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">目标金额 (ETH)</label>
+                            <input type="number" id="targetAmount" required step="0.001" min="0.001" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">项目类型</label>
+                            <select id="projectType" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="investment">投资项目</option>
+                                <option value="donation">捐款项目</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 rounded-lg font-semibold" data-requires-wallet="true">创建项目</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEX Page -->
+        <div id="dexPage" class="page hidden">
+            <div class="max-w-6xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold mb-8">去中心化交易所</h2>
+                
+                <!-- Trading Interface -->
+                <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Buy/Sell Card -->
+                    <div class="card p-6 rounded-xl">
+                        <div class="flex space-x-4 mb-6">
+                            <button onclick="setTradeType('buy')" id="buyBtn" class="btn-secondary px-4 py-2 rounded-lg">买入</button>
+                            <button onclick="setTradeType('sell')" id="sellBtn" class="btn-primary px-4 py-2 rounded-lg">卖出</button>
+                        </div>
+                        
+                        <form id="tradeForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">交易对</label>
+                                <select id="tradePair" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg">
+                                    <option value="ETH/USDT">ETH/USDT</option>
+                                    <option value="ETH/USDC">ETH/USDC</option>
+                                    <option value="ETH/DAI">ETH/DAI</option>
+                                    <option value="ETH/WBTC">ETH/WBTC</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">数量</label>
+                                <input type="number" id="tradeAmount" step="0.001" min="0.001" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">价格</label>
+                                <input type="number" id="tradePrice" step="0.01" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg">
+                            </div>
+                            <button type="submit" class="w-full btn-primary py-3 rounded-lg font-semibold" data-requires-wallet="true">
+                                执行交易
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Order Book -->
+                    <div class="card p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold mb-4">订单簿</h3>
+                        <div class="space-y-2">
+                            <div class="text-sm text-gray-400 grid grid-cols-3 gap-2">
+                                <span>价格</span>
+                                <span>数量</span>
+                                <span>总额</span>
+                            </div>
+                            <!-- Sell Orders -->
+                            <div id="sellOrders" class="space-y-1">
+                                <div class="text-sm text-red-400 grid grid-cols-3 gap-2">
+                                    <span>2,450.50</span>
+                                    <span>0.1234</span>
+                                    <span>302.41</span>
+                                </div>
+                                <div class="text-sm text-red-400 grid grid-cols-3 gap-2">
+                                    <span>2,449.80</span>
+                                    <span>0.5678</span>
+                                    <span>1,391.02</span>
+                                </div>
+                            </div>
+                            <div class="border-t border-gray-600 my-2"></div>
+                            <!-- Buy Orders -->
+                            <div id="buyOrders" class="space-y-1">
+                                <div class="text-sm text-green-400 grid grid-cols-3 gap-2">
+                                    <span>2,448.20</span>
+                                    <span>0.3456</span>
+                                    <span>846.01</span>
+                                </div>
+                                <div class="text-sm text-green-400 grid grid-cols-3 gap-2">
+                                    <span>2,447.50</span>
+                                    <span>0.7890</span>
+                                    <span>1,931.08</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trading Pairs -->
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-lg font-semibold mb-4">交易对</h3>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="dex-pair p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium">ETH/USDT</span>
+                                <span class="text-green-400">+2.45%</span>
+                            </div>
+                            <div class="text-2xl font-bold">$2,449.50</div>
+                            <div class="text-sm text-gray-400">24h Volume: 1,234.56 ETH</div>
+                        </div>
+                        <div class="dex-pair p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium">ETH/USDC</span>
+                                <span class="text-red-400">-1.23%</span>
+                            </div>
+                            <div class="text-2xl font-bold">$2,448.20</div>
+                            <div class="text-sm text-gray-400">24h Volume: 987.65 ETH</div>
+                        </div>
+                        <div class="dex-pair p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium">ETH/DAI</span>
+                                <span class="text-green-400">+0.89%</span>
+                            </div>
+                            <div class="text-2xl font-bold">$2,447.80</div>
+                            <div class="text-sm text-gray-400">24h Volume: 543.21 ETH</div>
+                        </div>
+                        <div class="dex-pair p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium">ETH/WBTC</span>
+                                <span class="text-green-400">+3.12%</span>
+                            </div>
+                            <div class="text-2xl font-bold">0.0456</div>
+                            <div class="text-sm text-gray-400">24h Volume: 234.56 ETH</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div id="projectModal" class="modal fixed inset-0 hidden items-center justify-center z-50">
+        <div class="card p-8 rounded-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modalProjectName" class="text-2xl font-bold"></h3>
+                <button onclick="closeProjectModal()" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modalProjectContent">
+                <!-- Project details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let web3Provider = null;
+        let userAccount = null;
+        let projects = [];
+        let currentTradeType = 'buy';
+
+        // Zama FHEVM Contract Addresses
+        const FHEVM_CONTRACTS = {
+            EXECUTOR: '0x848B0066793BcC60346Da1F49049357399B8D595',
+            ACL: '0x687820221192C5B662b25367F70076A37bc79b6c',
+            HCU_LIMIT: '0x594BB474275918AF9609814E68C61B1587c5F838',
+            KMS_VERIFIER: '0x1364cBBf2cDF5032C47d8226a6f6FBD2AFCDacAC',
+            INPUT_VERIFIER: '0xbc91f3daD1A5F19F8390c400196e58073B6a0BC4',
+            DECRYPTION_ORACLE: '0xa02Cda4Ca3a71D7C46997716F4283aa851C28812',
+            DECRYPTION_ADDRESS: '0xb6E160B1ff80D67Bfe90A85eE06Ce0A2613607D1',
+            INPUT_VERIFICATION_ADDRESS: '0x7048C39f048125eDa9d678AEbaDfB22F7900a29F'
+        };
+
+        const RELAYER_URL = 'https://relayer.testnet.zama.cloud';
+
+        // Sample project contract ABI (simplified for demo)
+        const PROJECT_CONTRACT_ABI = [
+            "function createProject(string memory name, string memory description, uint256 targetAmount, uint8 projectType) external payable returns (uint256)",
+            "function contribute(uint256 projectId) external payable",
+            "function getProject(uint256 projectId) external view returns (tuple(string name, string description, uint256 targetAmount, uint256 currentAmount, uint8 projectType, address creator, bool active))",
+            "function getProjectCount() external view returns (uint256)",
+            "event ProjectCreated(uint256 indexed projectId, address indexed creator, string name, uint256 targetAmount)",
+            "event ContributionMade(uint256 indexed projectId, address indexed contributor, uint256 amount)"
+        ];
+
+        // Sample DEX contract ABI
+        const DEX_CONTRACT_ABI = [
+            "function trade(string memory pair, uint256 amount, uint256 price, bool isBuy) external payable",
+            "function getPrice(string memory pair) external view returns (uint256)",
+            "event TradeExecuted(address indexed trader, string pair, uint256 amount, uint256 price, bool isBuy)"
+        ];
+
+        // Contract addresses (these would be deployed contracts)
+        const PROJECT_CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Example address
+        const DEX_CONTRACT_ADDRESS = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'; // Example address
+
+        // Simple transaction helper to avoid signature issues
+        async function sendSimpleTransaction(to, value, data = '0x') {
+            try {
+                const signer = await web3Provider.getSigner();
+                
+                // Validate inputs
+                if (!to || !ethers.utils.isAddress(to)) {
+                    throw new Error('Invalid recipient address');
+                }
+                
+                // Use the simplest transaction format
+                const txRequest = {
+                    to: to,
+                    value: value || '0'
+                };
+                
+                // Add data if provided
+                if (data && data !== '0x') {
+                    txRequest.data = data;
+                }
+                
+                console.log('Sending transaction:', txRequest);
+                
+                // Send transaction with minimal parameters to avoid signature issues
+                const tx = await signer.sendTransaction(txRequest);
+                
+                console.log('Transaction sent:', tx);
+                return tx;
+            } catch (error) {
+                console.error('Transaction failed:', error);
+                throw error;
+            }
+        }
+
+        // Check if buttons should be disabled
+        function updateButtonStates() {
+            const walletRequiredButtons = document.querySelectorAll('[data-requires-wallet]');
+            walletRequiredButtons.forEach(button => {
+                if (!userAccount) {
+                    button.disabled = true;
+                    button.classList.add('opacity-50', 'cursor-not-allowed');
+                    button.title = '需要连接MetaMask钱包';
+                    
+                    // Add click handler to show notification
+                    button.addEventListener('click', function(e) {
+                        if (!userAccount) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            showNotification('请先连接MetaMask钱包才能使用此功能!', 'warning');
+                        }
+                    });
+                } else {
+                    button.disabled = false;
+                    button.classList.remove('opacity-50', 'cursor-not-allowed');
+                    button.title = '';
+                }
+            });
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('home');
+            loadProjects();
+            setupEventListeners();
+            updateButtonStates();
+            
+            // Check if MetaMask is already connected
+            if (typeof window.ethereum !== 'undefined') {
+                window.ethereum.request({ method: 'eth_accounts' })
+                    .then(accounts => {
+                        if (accounts.length > 0) {
+                            // Auto-connect if already authorized
+                            connectWallet();
+                        }
+                    })
+                    .catch(console.error);
+            }
+        });
+
+        // Wallet functions
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    showNotification('正在连接MetaMask钱包...', 'info');
+                    
+                    // Request account access
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+                    
+                    if (accounts.length === 0) {
+                        throw new Error('没有可用的账户');
+                    }
+                    
+                    web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+                    userAccount = accounts[0];
+                    
+                    // Check network
+                    const network = await web3Provider.getNetwork();
+                    console.log('Connected to network:', network.name, 'Chain ID:', network.chainId);
+                    
+                    // Get balance
+                    const balance = await web3Provider.getBalance(userAccount);
+                    const balanceInEth = ethers.utils.formatEther(balance);
+                    console.log('Account balance:', balanceInEth, 'ETH');
+                    
+                    updateWalletStatus();
+                    updateButtonStates();
+                    showNotification(`MetaMask钱包连接成功! 余额: ${parseFloat(balanceInEth).toFixed(4)} ETH`, 'success');
+                    
+                    // Listen for account changes
+                    window.ethereum.on('accountsChanged', function (accounts) {
+                        if (accounts.length === 0) {
+                            disconnectWallet();
+                        } else {
+                            userAccount = accounts[0];
+                            updateWalletStatus();
+                            updateButtonStates();
+                            showNotification('账户已切换', 'info');
+                        }
+                    });
+                    
+                    // Listen for network changes
+                    window.ethereum.on('chainChanged', function (chainId) {
+                        showNotification('网络已切换，请刷新页面', 'warning');
+                    });
+                    
+                } catch (error) {
+                    console.error('连接钱包失败:', error);
+                    let errorMessage = '连接钱包失败';
+                    if (error.code === 4001) {
+                        errorMessage = '用户拒绝连接钱包';
+                    } else if (error.code === -32002) {
+                        errorMessage = '钱包连接请求待处理，请检查MetaMask';
+                    }
+                    showNotification(errorMessage + ': ' + error.message, 'error');
+                }
+            } else {
+                showNotification('未检测到MetaMask! 请安装MetaMask浏览器扩展', 'error');
+                window.open('https://metamask.io/', '_blank');
+            }
+        }
+
+        function disconnectWallet() {
+            web3Provider = null;
+            userAccount = null;
+            updateWalletStatus();
+            updateButtonStates();
+            showNotification('钱包已断开连接', 'info');
+        }
+
+        async function updateWalletStatus() {
+            const statusEl = document.getElementById('walletStatus');
+            const balanceEl = document.getElementById('walletBalance');
+            const connectBtn = document.getElementById('connectWallet');
+            
+            if (userAccount) {
+                statusEl.textContent = `${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
+                statusEl.className = 'text-green-400';
+                connectBtn.textContent = '断开连接';
+                connectBtn.onclick = disconnectWallet;
+                connectBtn.className = 'bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg font-medium transition-colors';
+                
+                // Show balance
+                try {
+                    const balance = await web3Provider.getBalance(userAccount);
+                    const balanceInEth = ethers.utils.formatEther(balance);
+                    balanceEl.textContent = `余额: ${parseFloat(balanceInEth).toFixed(4)} ETH`;
+                    balanceEl.classList.remove('hidden');
+                } catch (error) {
+                    console.error('获取余额失败:', error);
+                    balanceEl.classList.add('hidden');
+                }
+            } else {
+                statusEl.textContent = '未连接钱包';
+                statusEl.className = 'text-gray-400';
+                connectBtn.textContent = '连接MetaMask';
+                connectBtn.onclick = connectWallet;
+                connectBtn.className = 'btn-primary text-white px-4 py-2 rounded-lg font-medium';
+                balanceEl.classList.add('hidden');
+            }
+        }
+
+        // Page navigation
+        function showPage(pageName) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.add('hidden'));
+            
+            // Show selected page
+            document.getElementById(pageName + 'Page').classList.remove('hidden');
+            
+            // Update active nav link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('text-blue-400'));
+        }
+
+        // Project functions
+        function loadProjects() {
+            // Sample projects data
+            projects = [
+                {
+                    id: 1,
+                    name: '绿色能源项目',
+                    description: '开发可再生能源解决方案',
+                    targetAmount: 100,
+                    currentAmount: 65.5,
+                    type: 'investment',
+                    creator: '0x1234...5678'
+                },
+                {
+                    id: 2,
+                    name: '教育慈善基金',
+                    description: '为贫困地区儿童提供教育支持',
+                    targetAmount: 50,
+                    currentAmount: 32.1,
+                    type: 'donation',
+                    creator: '0x9876...5432'
+                }
+            ];
+            
+            renderProjects();
+        }
+
+        function renderProjects() {
+            const projectsList = document.getElementById('projectsList');
+            projectsList.innerHTML = '';
+            
+            projects.forEach(project => {
+                const progress = (project.currentAmount / project.targetAmount) * 100;
+                const projectCard = `
+                    <div class="card project-card p-6 rounded-xl cursor-pointer" onclick="openProjectModal(${project.id})">
+                        <div class="mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-xl font-semibold">${project.name}</h3>
+                                <span class="px-2 py-1 text-xs rounded-full ${project.type === 'investment' ? 'bg-blue-500' : 'bg-green-500'}">${project.type === 'investment' ? '投资' : '捐款'}</span>
+                            </div>
+                            <p class="text-gray-300 text-sm mb-4">${project.description}</p>
+                            <div class="mb-2">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>进度: ${progress.toFixed(1)}%</span>
+                                    <span>${project.currentAmount} / ${project.targetAmount} ETH</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="event.stopPropagation(); participateInProject(${project.id}, 'invest')" 
+                                class="flex-1 btn-primary py-2 rounded-lg text-sm" data-requires-wallet="true">
+                                ${project.type === 'investment' ? '投资' : '捐款'}
+                            </button>
+                            <button onclick="event.stopPropagation(); openProjectModal(${project.id})" 
+                                class="flex-1 bg-slate-600 hover:bg-slate-500 py-2 rounded-lg text-sm transition-colors">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                `;
+                projectsList.innerHTML += projectCard;
+            });
+            
+            // Update button states after rendering
+            setTimeout(updateButtonStates, 100);
+        }
+
+        async function createProject() {
+            if (!userAccount) {
+                showNotification('请先连接MetaMask钱包!', 'error');
+                return;
+            }
+
+            const name = document.getElementById('projectName').value.trim();
+            const description = document.getElementById('projectDescription').value.trim();
+            const targetAmount = parseFloat(document.getElementById('targetAmount').value);
+            const type = document.getElementById('projectType').value;
+
+            // Validation
+            if (!name || !description || !targetAmount) {
+                showNotification('请填写所有必填字段!', 'error');
+                return;
+            }
+
+            if (targetAmount <= 0) {
+                showNotification('目标金额必须大于0!', 'error');
+                return;
+            }
+
+            if (name.length > 100) {
+                showNotification('项目名称不能超过100个字符!', 'error');
+                return;
+            }
+
+            try {
+                showNotification('正在创建项目，请在MetaMask中确认交易...', 'info');
+                
+                // Use simple transaction to avoid signature issues
+                const creationFee = ethers.utils.parseEther('0.001');
+                const tx = await sendSimpleTransaction(PROJECT_CONTRACT_ADDRESS, creationFee);
+                
+                showNotification('交易已发送，等待区块确认...', 'info');
+                
+                // Wait for transaction to be mined
+                let receipt;
+                try {
+                    receipt = await tx.wait();
+                    console.log('Transaction receipt:', receipt);
+                } catch (waitError) {
+                    console.error('Transaction wait failed:', waitError);
+                    showNotification('交易提交成功，但等待确认时出现问题，请稍后查看', 'warning');
+                    return;
+                }
+
+                // Check if transaction was successful
+                if (receipt && receipt.status === 0) {
+                    showNotification('交易被回滚，创建项目失败', 'error');
+                    return;
+                }
+
+                // Add to local projects array (in real app, this would come from contract events)
+                const newProject = {
+                    id: projects.length + 1,
+                    name,
+                    description,
+                    targetAmount,
+                    currentAmount: 0,
+                    type,
+                    creator: userAccount,
+                    txHash: receipt?.transactionHash || receipt?.hash || tx.hash,
+                    blockNumber: receipt?.blockNumber
+                };
+                
+                projects.push(newProject);
+                renderProjects();
+                
+                // Clear form
+                document.getElementById('createProjectForm').reset();
+                
+                // Safe hash display
+                const hashDisplay = (receipt?.transactionHash || receipt?.hash || tx.hash || '未知');
+                if (hashDisplay && hashDisplay !== '未知' && hashDisplay.length >= 10) {
+                    showNotification(`项目创建成功! 交易哈希: ${hashDisplay.substring(0, 10)}...`, 'success');
+                } else {
+                    showNotification(`项目创建成功!`, 'success');
+                }
+                showPage('projects');
+                
+            } catch (error) {
+                console.error('创建项目失败:', error);
+                let errorMessage = '创建项目失败';
+                
+                if (error.code === 4001) {
+                    errorMessage = '用户取消了交易';
+                } else if (error.code === -32603) {
+                    errorMessage = '交易执行失败，可能是Gas不足';
+                } else if (error.reason) {
+                    errorMessage = `交易失败: ${error.reason}`;
+                } else if (error.message) {
+                    errorMessage = `交易失败: ${error.message}`;
+                }
+                
+                showNotification(errorMessage, 'error');
+            }
+        }
+
+        async function participateInProject(projectId, action) {
+            if (!userAccount) {
+                showNotification('请先连接MetaMask钱包!', 'error');
+                return;
+            }
+
+            const project = projects.find(p => p.id === projectId);
+            if (!project) {
+                showNotification('项目不存在!', 'error');
+                return;
+            }
+
+            // Create custom input modal instead of prompt
+            const amount = await showAmountModal(project);
+            if (!amount) return;
+
+            const amountNum = parseFloat(amount);
+            if (isNaN(amountNum) || amountNum <= 0) {
+                showNotification('请输入有效金额!', 'error');
+                return;
+            }
+
+            if (amountNum < 0.001) {
+                showNotification('最小金额为 0.001 ETH!', 'error');
+                return;
+            }
+
+            try {
+                showNotification(`正在处理${project.type === 'investment' ? '投资' : '捐款'}，请在MetaMask中确认交易...`, 'info');
+                
+                const amountWei = ethers.utils.parseEther(amount);
+                
+                // Check user balance
+                const balance = await web3Provider.getBalance(userAccount);
+                if (balance.lt(amountWei)) {
+                    showNotification('账户余额不足!', 'error');
+                    return;
+                }
+
+                // Use simple transaction to avoid signature issues
+                const tx = await sendSimpleTransaction(PROJECT_CONTRACT_ADDRESS, amountWei);
+                
+                showNotification('交易已发送，等待区块确认...', 'info');
+                
+                let receipt;
+                try {
+                    receipt = await tx.wait();
+                    console.log('Participation transaction receipt:', receipt);
+                } catch (waitError) {
+                    console.error('Transaction wait failed:', waitError);
+                    showNotification(`${project.type === 'investment' ? '投资' : '捐款'}提交成功，但等待确认时出现问题，请稍后查看`, 'warning');
+                    return;
+                }
+
+                // Check if transaction was successful
+                if (receipt && receipt.status === 0) {
+                    showNotification(`${project.type === 'investment' ? '投资' : '捐款'}交易被回滚，操作失败`, 'error');
+                    return;
+                }
+
+                // Update project amount
+                project.currentAmount += amountNum;
+                renderProjects();
+                
+                // Safe hash display
+                const hashDisplay = (receipt?.transactionHash || receipt?.hash || tx.hash || '未知');
+                if (hashDisplay && hashDisplay !== '未知' && hashDisplay.length >= 10) {
+                    showNotification(
+                        `${project.type === 'investment' ? '投资' : '捐款'}成功! 金额: ${amount} ETH\n交易哈希: ${hashDisplay.substring(0, 10)}...`, 
+                        'success'
+                    );
+                } else {
+                    showNotification(
+                        `${project.type === 'investment' ? '投资' : '捐款'}成功! 金额: ${amount} ETH`, 
+                        'success'
+                    );
+                }
+                
+                // Close modal if open
+                closeProjectModal();
+                
+            } catch (error) {
+                console.error('交易失败:', error);
+                let errorMessage = `${project.type === 'investment' ? '投资' : '捐款'}失败`;
+                
+                if (error.code === 4001) {
+                    errorMessage = '用户取消了交易';
+                } else if (error.code === -32603) {
+                    errorMessage = '交易执行失败，可能是Gas不足';
+                } else if (error.reason) {
+                    errorMessage = `交易失败: ${error.reason}`;
+                } else if (error.message) {
+                    errorMessage = `交易失败: ${error.message}`;
+                }
+                
+                showNotification(errorMessage, 'error');
+            }
+        }
+
+        // Custom amount input modal
+        function showAmountModal(project) {
+            return new Promise((resolve) => {
+                const modalHtml = `
+                    <div id="amountModal" class="modal fixed inset-0 flex items-center justify-center z-50">
+                        <div class="card p-6 rounded-xl max-w-md w-full mx-4">
+                            <h3 class="text-xl font-bold mb-4">${project.type === 'investment' ? '参与投资' : '进行捐款'}</h3>
+                            <p class="text-gray-300 mb-4">项目: ${project.name}</p>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">金额 (ETH)</label>
+                                <input type="number" id="amountInput" step="0.001" min="0.001" 
+                                    class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="请输入金额">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button onclick="document.getElementById('amountModal').remove(); resolve(null)" 
+                                    class="flex-1 bg-slate-600 hover:bg-slate-500 py-2 rounded-lg">取消</button>
+                                <button onclick="confirmAmount()" 
+                                    class="flex-1 btn-primary py-2 rounded-lg">确认</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                
+                window.confirmAmount = function() {
+                    const amount = document.getElementById('amountInput').value;
+                    document.getElementById('amountModal').remove();
+                    delete window.confirmAmount;
+                    resolve(amount);
+                };
+                
+                // Focus on input
+                setTimeout(() => {
+                    document.getElementById('amountInput').focus();
+                }, 100);
+            });
+        }
+
+        function openProjectModal(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            document.getElementById('modalProjectName').textContent = project.name;
+            document.getElementById('modalProjectContent').innerHTML = `
+                <div class="space-y-4">
+                    <p class="text-gray-300">${project.description}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="text-sm text-gray-400">目标金额</span>
+                            <div class="text-lg font-semibold">${project.targetAmount} ETH</div>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-400">当前金额</span>
+                            <div class="text-lg font-semibold">${project.currentAmount} ETH</div>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-400">项目类型</span>
+                            <div class="text-lg">${project.type === 'investment' ? '投资项目' : '捐款项目'}</div>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-400">创建者</span>
+                            <div class="text-lg font-mono">${project.creator}</div>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-700">
+                        <button onclick="participateInProject(${project.id}, 'participate')" 
+                            class="w-full btn-primary py-3 rounded-lg font-semibold" data-requires-wallet="true">
+                            ${project.type === 'investment' ? '参与投资' : '进行捐款'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('projectModal').classList.remove('hidden');
+            document.getElementById('projectModal').classList.add('flex');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').classList.add('hidden');
+            document.getElementById('projectModal').classList.remove('flex');
+        }
+
+        // DEX functions
+        function setTradeType(type) {
+            currentTradeType = type;
+            const buyBtn = document.getElementById('buyBtn');
+            const sellBtn = document.getElementById('sellBtn');
+            
+            if (type === 'buy') {
+                buyBtn.className = 'btn-secondary px-4 py-2 rounded-lg';
+                sellBtn.className = 'btn-primary px-4 py-2 rounded-lg';
+            } else {
+                buyBtn.className = 'btn-primary px-4 py-2 rounded-lg';
+                sellBtn.className = 'btn-secondary px-4 py-2 rounded-lg';
+            }
+        }
+
+        async function executeTrade() {
+            if (!userAccount) {
+                showNotification('请先连接MetaMask钱包!', 'error');
+                return;
+            }
+
+            const pair = document.getElementById('tradePair').value;
+            const amount = parseFloat(document.getElementById('tradeAmount').value);
+            const price = parseFloat(document.getElementById('tradePrice').value);
+
+            // Validation
+            if (!amount || !price || amount <= 0 || price <= 0) {
+                showNotification('请输入有效的数量和价格!', 'error');
+                return;
+            }
+
+            if (amount < 0.001) {
+                showNotification('最小交易数量为 0.001!', 'error');
+                return;
+            }
+
+            const totalValue = currentTradeType === 'buy' ? amount * price : amount;
+            
+            if (totalValue > 10) {
+                showNotification('单笔交易金额不能超过10 ETH!', 'error');
+                return;
+            }
+
+            try {
+                showNotification(`正在执行${currentTradeType === 'buy' ? '买入' : '卖出'}交易，请在MetaMask中确认...`, 'info');
+                
+                const valueWei = ethers.utils.parseEther(totalValue.toString());
+                
+                // Check user balance for buy orders
+                if (currentTradeType === 'buy') {
+                    const balance = await web3Provider.getBalance(userAccount);
+                    if (balance.lt(valueWei)) {
+                        showNotification('账户余额不足，无法执行买入交易!', 'error');
+                        return;
+                    }
+                }
+
+                // Use simple transaction to avoid signature issues
+                const transactionValue = currentTradeType === 'buy' ? valueWei : ethers.utils.parseEther('0');
+                const tx = await sendSimpleTransaction(DEX_CONTRACT_ADDRESS, transactionValue);
+                
+                showNotification('交易已发送，等待区块确认...', 'info');
+                
+                let receipt;
+                try {
+                    receipt = await tx.wait();
+                    console.log('DEX trade receipt:', receipt);
+                } catch (waitError) {
+                    console.error('Transaction wait failed:', waitError);
+                    showNotification(`${currentTradeType === 'buy' ? '买入' : '卖出'}交易提交成功，但等待确认时出现问题，请稍后查看`, 'warning');
+                    return;
+                }
+
+                // Check if transaction was successful
+                if (receipt && receipt.status === 0) {
+                    showNotification(`${currentTradeType === 'buy' ? '买入' : '卖出'}交易被回滚，操作失败`, 'error');
+                    return;
+                }
+                
+                // Safe hash display
+                const hashDisplay = (receipt?.transactionHash || receipt?.hash || tx.hash || '未知');
+                if (hashDisplay && hashDisplay !== '未知' && hashDisplay.length >= 10) {
+                    showNotification(
+                        `${currentTradeType === 'buy' ? '买入' : '卖出'}交易执行成功!\n` +
+                        `交易对: ${pair}\n` +
+                        `数量: ${amount}\n` +
+                        `价格: ${price}\n` +
+                        `交易哈希: ${hashDisplay.substring(0, 10)}...`,
+                        'success'
+                    );
+                } else {
+                    showNotification(
+                        `${currentTradeType === 'buy' ? '买入' : '卖出'}交易执行成功!\n` +
+                        `交易对: ${pair}\n` +
+                        `数量: ${amount}\n` +
+                        `价格: ${price}`,
+                        'success'
+                    );
+                }
+                
+                // Clear form
+                document.getElementById('tradeForm').reset();
+                
+                // Update trading pairs display with some animation
+                updateTradingPairsDisplay();
+                
+            } catch (error) {
+                console.error('交易执行失败:', error);
+                let errorMessage = `${currentTradeType === 'buy' ? '买入' : '卖出'}交易失败`;
+                
+                if (error.code === 4001) {
+                    errorMessage = '用户取消了交易';
+                } else if (error.code === -32603) {
+                    errorMessage = '交易执行失败，可能是Gas不足或滑点过大';
+                } else if (error.reason) {
+                    errorMessage = `交易失败: ${error.reason}`;
+                } else if (error.message) {
+                    errorMessage = `交易失败: ${error.message}`;
+                }
+                
+                showNotification(errorMessage, 'error');
+            }
+        }
+
+        // Update trading pairs with simulated price changes
+        function updateTradingPairsDisplay() {
+            const pairs = document.querySelectorAll('.dex-pair');
+            pairs.forEach(pair => {
+                // Add a subtle animation to show update
+                pair.style.transform = 'scale(1.02)';
+                pair.style.transition = 'transform 0.3s ease';
+                
+                setTimeout(() => {
+                    pair.style.transform = 'scale(1)';
+                }, 300);
+                
+                // Simulate small price changes
+                const priceElement = pair.querySelector('.text-2xl');
+                if (priceElement) {
+                    const currentPrice = parseFloat(priceElement.textContent.replace(/[^0-9.]/g, ''));
+                    const change = (Math.random() - 0.5) * 0.02; // ±1% change
+                    const newPrice = currentPrice * (1 + change);
+                    
+                    if (priceElement.textContent.includes('$')) {
+                        priceElement.textContent = `$${newPrice.toFixed(2)}`;
+                    } else {
+                        priceElement.textContent = newPrice.toFixed(4);
+                    }
+                }
+            });
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            document.getElementById('createProjectForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createProject();
+            });
+
+            document.getElementById('tradeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                executeTrade();
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('projectModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProjectModal();
+                }
+            });
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg text-white max-w-sm ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

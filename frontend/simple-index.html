@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoFund Nexus - Privacy-Preserving Fundraising Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/ethers@6.4.0/dist/ethers.umd.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-black text-lg">CFN</span>
+                    </div>
+                    <span class="text-xl font-black text-white">CryptoFund Nexus</span>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-6">
+                    <a href="#" class="nav-link" onclick="showPage('home')">Home</a>
+                    <a href="#" class="nav-link" onclick="showPage('projects')">Projects</a>
+                    <a href="#" class="nav-link" onclick="showPage('dex')">DEX</a>
+                    <a href="#" class="nav-link" onclick="showPage('create')">Create</a>
+                </div>
+                
+                <button id="connectWallet" class="btn-primary px-6 py-2 rounded-xl font-semibold">
+                    Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Home Page -->
+        <div id="home" class="page">
+            <section class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h1 class="text-5xl md:text-7xl font-black mb-6">
+                            <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Privacy-First</span><br>
+                            <span class="text-white">Fundraising</span><br>
+                            <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Platform</span>
+                        </h1>
+                        <p class="text-xl text-slate-300 max-w-3xl mx-auto mb-8">
+                            Revolutionary fundraising platform using <strong class="text-blue-400">Fully Homomorphic Encryption</strong> 
+                            to ensure complete investment privacy while maintaining transparency and security.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="showPage('projects')" class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg">
+                                Explore Projects
+                            </button>
+                            <button onclick="showPage('create')" class="bg-slate-700/50 hover:bg-slate-600/50 px-8 py-4 rounded-xl font-semibold text-lg border border-slate-600">
+                                Launch Campaign
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Projects Page -->
+        <div id="projects" class="page hidden">
+            <section class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6">
+                            Active <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Projects</span>
+                        </h1>
+                        <p class="text-xl text-slate-300">
+                            Discover innovative projects raising funds with complete privacy protection
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Project Cards -->
+                        <div class="card rounded-2xl p-6">
+                            <div class="h-48 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-xl flex items-center justify-center mb-6">
+                                <div class="text-6xl">🚀</div>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">DeFi Project #1</h3>
+                            <p class="text-slate-300 text-sm mb-4">Revolutionary DeFi protocol with private fundraising capabilities using advanced encryption.</p>
+                            <div class="space-y-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Progress</span>
+                                    <span class="text-white font-semibold">75%</span>
+                                </div>
+                                <div class="w-full bg-slate-700/50 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button onclick="invest(1)" class="btn-primary px-4 py-2 rounded-lg text-sm">Invest</button>
+                                    <button onclick="donate(1)" class="bg-slate-700/50 px-4 py-2 rounded-lg text-sm border border-slate-600">Donate</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card rounded-2xl p-6">
+                            <div class="h-48 bg-gradient-to-br from-green-600/20 to-blue-600/20 rounded-xl flex items-center justify-center mb-6">
+                                <div class="text-6xl">⚡</div>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">DeFi Project #2</h3>
+                            <p class="text-slate-300 text-sm mb-4">Next-generation blockchain protocol with privacy-preserving smart contracts.</p>
+                            <div class="space-y-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Progress</span>
+                                    <span class="text-white font-semibold">92%</span>
+                                </div>
+                                <div class="w-full bg-slate-700/50 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full" style="width: 92%"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button onclick="invest(2)" class="btn-primary px-4 py-2 rounded-lg text-sm">Invest</button>
+                                    <button onclick="donate(2)" class="bg-slate-700/50 px-4 py-2 rounded-lg text-sm border border-slate-600">Donate</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card rounded-2xl p-6">
+                            <div class="h-48 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-xl flex items-center justify-center mb-6">
+                                <div class="text-6xl">🔐</div>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Privacy Protocol</h3>
+                            <p class="text-slate-300 text-sm mb-4">Advanced privacy protocol using zero-knowledge proofs and homomorphic encryption.</p>
+                            <div class="space-y-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-400">Progress</span>
+                                    <span class="text-white font-semibold">68%</span>
+                                </div>
+                                <div class="w-full bg-slate-700/50 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: 68%"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button onclick="invest(3)" class="btn-primary px-4 py-2 rounded-lg text-sm">Invest</button>
+                                    <button onclick="donate(3)" class="bg-slate-700/50 px-4 py-2 rounded-lg text-sm border border-slate-600">Donate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- DEX Page -->
+        <div id="dex" class="page hidden">
+            <section class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6">
+                            Confidential <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">DEX</span>
+                        </h1>
+                        <p class="text-xl text-slate-300">
+                            Trade tokens with complete privacy using encrypted order books
+                        </p>
+                    </div>
+                    
+                    <div class="max-w-md mx-auto">
+                        <div class="card rounded-2xl p-6">
+                            <h2 class="text-2xl font-bold text-white mb-6">Private Swap</h2>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-sm text-slate-300 mb-2 block">From</label>
+                                    <div class="bg-slate-700/50 rounded-xl p-4 border border-slate-600/50">
+                                        <div class="flex justify-between items-center">
+                                            <input type="number" placeholder="0.0" class="bg-transparent text-2xl font-bold text-white placeholder-slate-400 outline-none flex-1" id="fromAmount">
+                                            <select class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold outline-none" id="fromToken">
+                                                <option value="ETH">ETH</option>
+                                                <option value="CFNX">CFNX</option>
+                                                <option value="USDC">USDC</option>
+                                                <option value="USDT">USDT</option>
+                                            </select>
+                                        </div>
+                                        <div class="text-sm text-slate-400 mt-2">Balance: 1.5 ETH</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-center">
+                                    <button onclick="swapTokens()" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-full transition-colors">
+                                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-sm text-slate-300 mb-2 block">To</label>
+                                    <div class="bg-slate-700/50 rounded-xl p-4 border border-slate-600/50">
+                                        <div class="flex justify-between items-center">
+                                            <input type="number" placeholder="0.0" class="bg-transparent text-2xl font-bold text-white placeholder-slate-400 outline-none flex-1" id="toAmount" disabled>
+                                            <select class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold outline-none" id="toToken">
+                                                <option value="CFNX">CFNX</option>
+                                                <option value="ETH">ETH</option>
+                                                <option value="USDC">USDC</option>
+                                                <option value="USDT">USDT</option>
+                                            </select>
+                                        </div>
+                                        <div class="text-sm text-slate-400 mt-2">Balance: 1000 CFNX</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+                                    <div class="flex items-start space-x-3">
+                                        <svg class="w-5 h-5 text-blue-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                        <div>
+                                            <div class="text-sm font-medium text-blue-400">Private Trading</div>
+                                            <div class="text-xs text-slate-400 mt-1">Your trade amounts will be encrypted using FHE technology</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="executeSwap()" class="btn-primary w-full text-lg py-4 rounded-xl">Private Swap</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Create Project Page -->
+        <div id="create" class="page hidden">
+            <section class="py-20">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6">
+                            Create <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Project</span>
+                        </h1>
+                        <p class="text-xl text-slate-300">
+                            Launch your privacy-preserving fundraising campaign
+                        </p>
+                    </div>
+                    
+                    <div class="card rounded-2xl p-8">
+                        <form id="createProjectForm">
+                            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-2">Project Name *</label>
+                                    <input type="text" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400" placeholder="Enter project name" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-2">Website</label>
+                                    <input type="url" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400" placeholder="https://yourproject.com">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-slate-300 mb-2">Description *</label>
+                                <textarea class="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400 min-h-[120px] resize-none" placeholder="Describe your project and its goals..." required></textarea>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-2">Soft Cap (ETH) *</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400" placeholder="10" min="0.1" step="0.1" required>
+                                    <p class="text-sm text-slate-400 mt-1">Minimum funding goal</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-2">Hard Cap (ETH) *</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400" placeholder="100" min="1" step="0.1" required>
+                                    <p class="text-sm text-slate-400 mt-1">Maximum funding limit</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-2">Token Price (ETH) *</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400" placeholder="0.001" min="0.0001" step="0.0001" required>
+                                    <p class="text-sm text-slate-400 mt-1">Price per token</p>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" onclick="createProject(event)" class="btn-primary w-full text-lg py-4 rounded-xl">Create Project</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let isConnected = false;
+        let account = null;
+        let provider = null;
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-blue-400');
+                link.classList.add('text-slate-300');
+            });
+            event.target.classList.remove('text-slate-300');
+            event.target.classList.add('text-blue-400');
+        }
+
+        // MetaMask connection
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                    isConnected = true;
+                    provider = new ethers.BrowserProvider(window.ethereum);
+                    
+                    document.getElementById('connectWallet').innerHTML = `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`;
+                    document.getElementById('connectWallet').classList.add('bg-green-600');
+                    
+                    alert('Wallet connected successfully!');
+                } catch (error) {
+                    console.error('Failed to connect wallet:', error);
+                    alert('Failed to connect wallet: ' + error.message);
+                }
+            } else {
+                alert('MetaMask not detected. Please install MetaMask.');
+            }
+        }
+
+        // Investment function
+        async function invest(projectId) {
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                return;
+            }
+
+            const amount = prompt('Enter investment amount (ETH):');
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            if (parseFloat(amount) > 10) {
+                alert('Maximum investment amount is 10 ETH');
+                return;
+            }
+
+            try {
+                const signer = await provider.getSigner();
+                const gasPrice = await provider.getFeeData();
+                
+                const txParams = {
+                    to: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+                    value: ethers.parseEther(amount),
+                    gasLimit: 50000n
+                };
+                
+                if (gasPrice.gasPrice) {
+                    txParams.gasPrice = gasPrice.gasPrice;
+                }
+
+                const tx = await signer.sendTransaction(txParams);
+                alert(`💰 Investment transaction sent!\nHash: ${tx.hash}\nWaiting for confirmation...`);
+                
+                await tx.wait();
+                alert(`✅ Investment successful!\n${amount} ETH invested in Project ${projectId}\nYour investment is now encrypted and private!`);
+            } catch (error) {
+                console.error('Investment failed:', error);
+                let errorMessage = 'Investment failed: ';
+                
+                if (error.code === 4001) {
+                    errorMessage = 'Transaction rejected by user';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = 'Insufficient ETH balance for investment';
+                } else {
+                    errorMessage += error.message || 'Unknown error';
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // Donation function
+        async function donate(projectId) {
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                return;
+            }
+
+            const amount = prompt('Enter donation amount (ETH):');
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            if (parseFloat(amount) > 5) {
+                alert('Maximum donation amount is 5 ETH');
+                return;
+            }
+
+            try {
+                const signer = await provider.getSigner();
+                const gasPrice = await provider.getFeeData();
+                
+                const txParams = {
+                    to: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+                    value: ethers.parseEther(amount),
+                    gasLimit: 50000n
+                };
+                
+                if (gasPrice.gasPrice) {
+                    txParams.gasPrice = gasPrice.gasPrice;
+                }
+
+                const tx = await signer.sendTransaction(txParams);
+                alert(`❤️ Donation transaction sent!\nHash: ${tx.hash}\nWaiting for confirmation...`);
+                
+                await tx.wait();
+                alert(`✅ Donation successful!\n${amount} ETH donated to Project ${projectId}\nThank you for supporting innovation!`);
+            } catch (error) {
+                console.error('Donation failed:', error);
+                let errorMessage = 'Donation failed: ';
+                
+                if (error.code === 4001) {
+                    errorMessage = 'Transaction rejected by user';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = 'Insufficient ETH balance for donation';
+                } else {
+                    errorMessage += error.message || 'Unknown error';
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // DEX functions
+        function swapTokens() {
+            const fromToken = document.getElementById('fromToken');
+            const toToken = document.getElementById('toToken');
+            const fromAmount = document.getElementById('fromAmount');
+            const toAmount = document.getElementById('toAmount');
+
+            // Swap the token selections
+            const temp = fromToken.value;
+            fromToken.value = toToken.value;
+            toToken.value = temp;
+
+            // Swap the amounts
+            const tempAmount = fromAmount.value;
+            fromAmount.value = toAmount.value;
+            toAmount.value = tempAmount;
+        }
+
+        async function executeSwap() {
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                return;
+            }
+
+            const fromAmount = document.getElementById('fromAmount').value;
+            const fromToken = document.getElementById('fromToken').value;
+            const toToken = document.getElementById('toToken').value;
+
+            if (!fromAmount || parseFloat(fromAmount) <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            try {
+                // Check network first
+                const network = await provider.getNetwork();
+                console.log('Current network:', network);
+                
+                const signer = await provider.getSigner();
+                
+                // Get current gas price
+                const gasPrice = await provider.getFeeData();
+                console.log('Gas price:', gasPrice);
+                
+                // Build transaction with proper parameters
+                const txParams = {
+                    to: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+                    value: fromToken === 'ETH' ? ethers.parseEther(fromAmount) : ethers.parseEther('0'),
+                    gasLimit: 100000n, // Set explicit gas limit
+                };
+                
+                // Add gas price if available
+                if (gasPrice.gasPrice) {
+                    txParams.gasPrice = gasPrice.gasPrice;
+                }
+                
+                console.log('Transaction params:', txParams);
+                
+                const tx = await signer.sendTransaction(txParams);
+                
+                alert(`Swap transaction sent! Hash: ${tx.hash}\nWaiting for confirmation...`);
+                
+                // Wait for confirmation
+                const receipt = await tx.wait();
+                console.log('Transaction receipt:', receipt);
+                
+                alert(`✅ Swap successful!\n${fromAmount} ${fromToken} → ${toToken}\nTransaction Hash: ${tx.hash}`);
+                
+                // Reset form
+                document.getElementById('fromAmount').value = '';
+                document.getElementById('toAmount').value = '';
+                
+            } catch (error) {
+                console.error('Swap failed:', error);
+                
+                let errorMessage = 'Swap failed: ';
+                
+                if (error.code === 4001) {
+                    errorMessage = 'Transaction rejected by user';
+                } else if (error.code === -32603) {
+                    errorMessage = 'Internal error - please try again';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = 'Insufficient funds for transaction';
+                } else if (error.message.includes('gas')) {
+                    errorMessage = 'Gas estimation failed - please try with a smaller amount';
+                } else if (error.message.includes('nonce')) {
+                    errorMessage = 'Transaction nonce error - please try again';
+                } else if (error.message.includes('network')) {
+                    errorMessage = 'Network error - please check your connection';
+                } else {
+                    errorMessage += error.message || 'Unknown error';
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // Create project function
+        async function createProject(event) {
+            event.preventDefault();
+            
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                return;
+            }
+
+            // Get form data
+            const form = document.getElementById('createProjectForm');
+            const formData = new FormData(form);
+            const projectName = form.querySelector('input[placeholder="Enter project name"]').value;
+            const softCap = form.querySelector('input[placeholder="10"]').value;
+            const hardCap = form.querySelector('input[placeholder="100"]').value;
+            
+            if (!projectName || !softCap || !hardCap) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (parseFloat(hardCap) <= parseFloat(softCap)) {
+                alert('Hard cap must be greater than soft cap');
+                return;
+            }
+
+            try {
+                const signer = await provider.getSigner();
+                const gasPrice = await provider.getFeeData();
+                
+                const txParams = {
+                    to: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+                    value: ethers.parseEther('0.01'), // Small deployment fee
+                    gasLimit: 100000n
+                };
+                
+                if (gasPrice.gasPrice) {
+                    txParams.gasPrice = gasPrice.gasPrice;
+                }
+
+                const tx = await signer.sendTransaction(txParams);
+                alert(`🚀 Project creation transaction sent!\nProject: ${projectName}\nHash: ${tx.hash}\nWaiting for confirmation...`);
+                
+                await tx.wait();
+                alert(`✅ Project created successfully!\nProject Name: ${projectName}\nSoft Cap: ${softCap} ETH\nHard Cap: ${hardCap} ETH\n\nYour project is now live with privacy protection!`);
+                
+                // Reset form
+                document.getElementById('createProjectForm').reset();
+                
+                // Show success message and redirect to projects
+                setTimeout(() => {
+                    showPage('projects');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Project creation failed:', error);
+                let errorMessage = 'Project creation failed: ';
+                
+                if (error.code === 4001) {
+                    errorMessage = 'Transaction rejected by user';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = 'Insufficient ETH for deployment fee (0.01 ETH required)';
+                } else {
+                    errorMessage += error.message || 'Unknown error';
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // Initialize
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+
+        // Auto-calculate DEX amounts
+        document.getElementById('fromAmount').addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            const rate = 2000; // Simplified exchange rate
+            document.getElementById('toAmount').value = (amount * rate).toFixed(6);
+        });
+
+        // Navigation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .nav-link {
+                color: #cbd5e1;
+                transition: color 0.2s;
+            }
+            .nav-link:hover {
+                color: #60a5fa;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

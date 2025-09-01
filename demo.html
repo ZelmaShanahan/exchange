@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoFund Nexus - Privacy-Preserving Fundraising Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0F172A 0%, #1E293B 25%, #0F172A 50%, #1E293B 75%, #0F172A 100%); }
+        .text-gradient { background: linear-gradient(90deg, #60A5FA, #A78BFA, #60A5FA); background-size: 200% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradient-flow 3s ease-in-out infinite; }
+        @keyframes gradient-flow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .btn-primary { background: linear-gradient(to right, #2563EB, #9333EA); }
+        .btn-primary:hover { background: linear-gradient(to right, #1D4ED8, #7C3AED); }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen gradient-bg">
+    <!-- Navigation -->
+    <nav class="bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-black text-lg">CFN</span>
+                    </div>
+                    <span class="text-xl font-black text-white">CryptoFund Nexus</span>
+                </div>
+                <div class="hidden lg:flex items-center space-x-6">
+                    <a href="#" class="text-slate-300 hover:text-white">Home</a>
+                    <a href="#" class="text-slate-300 hover:text-white">Projects</a>
+                    <a href="#" class="text-slate-300 hover:text-white">DEX</a>
+                    <a href="#" class="text-slate-300 hover:text-white">Create</a>
+                    <a href="#" class="text-slate-300 hover:text-white">Dashboard</a>
+                </div>
+                <button class="btn-primary px-6 py-2 rounded-xl font-semibold" onclick="connectWallet()">
+                    Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600/20 text-blue-300 rounded-full text-sm border border-blue-500/30">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        <span>Powered by Zama FHE Protocol</span>
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
+                        <span class="text-gradient">Privacy-First</span><br>
+                        <span class="text-white">Fundraising</span><br>
+                        <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Platform</span>
+                    </h1>
+                    
+                    <p class="text-xl text-slate-300 max-w-2xl leading-relaxed">
+                        Revolutionary fundraising platform using <strong class="text-blue-400">Fully Homomorphic Encryption</strong> 
+                        to ensure complete investment privacy while maintaining transparency and security.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg group" onclick="exploreProjects()">
+                            Explore Projects
+                            <svg class="h-5 w-5 ml-2 inline-block group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </button>
+                        <button class="px-8 py-4 bg-slate-700/50 hover:bg-slate-600/50 text-white rounded-xl font-semibold text-lg border border-slate-600" onclick="createProject()">
+                            Launch Campaign
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="card rounded-2xl p-8 relative z-10">
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-bold text-white">CryptoFund Nexus</h3>
+                                <div class="flex items-center space-x-2">
+                                    <div class="h-2 w-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                                    <span class="text-xs text-emerald-400">Live</span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400">Total Raised</p>
+                                    <p class="text-xl font-bold text-white">$2.4M</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400">Private Investments</p>
+                                    <p class="text-xl font-bold text-white">1,247</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400">Active Projects</p>
+                                    <p class="text-xl font-bold text-white">89</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400">Success Rate</p>
+                                    <p class="text-xl font-bold text-white">94%</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-2 p-3 bg-blue-600/10 rounded-lg border border-blue-500/20">
+                                <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-blue-400">Private Investment Protected</p>
+                                    <p class="text-xs text-slate-400">Your contribution amounts are fully encrypted</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-slate-800/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6">
+                    Privacy-Preserving <span class="text-gradient">Innovation</span>
+                </h2>
+                <p class="text-xl text-slate-300 max-w-3xl mx-auto">
+                    Experience the future of confidential fundraising with cutting-edge FHE technology
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card rounded-2xl p-8 text-center hover:bg-slate-700/30 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-blue-600/20 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Complete Privacy</h3>
+                    <p class="text-slate-300">
+                        Investment amounts encrypted using Zama FHE technology, ensuring complete confidentiality while maintaining transparency.
+                    </p>
+                </div>
+
+                <div class="card rounded-2xl p-8 text-center hover:bg-slate-700/30 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Confidential DEX</h3>
+                    <p class="text-slate-300">
+                        Trade project tokens privately with encrypted order books and confidential AMM functionality.
+                    </p>
+                </div>
+
+                <div class="card rounded-2xl p-8 text-center hover:bg-slate-700/30 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-emerald-600/20 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Verified Projects</h3>
+                    <p class="text-slate-300">
+                        Multi-tier verification system from Bronze to Diamond ensures only legitimate projects reach our platform.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample Projects Section -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6">
+                    Active <span class="text-gradient">Projects</span>
+                </h2>
+                <p class="text-xl text-slate-300">
+                    Discover innovative projects raising funds with complete privacy
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Sample Project Cards -->
+                <div class="card rounded-2xl p-6 hover:bg-slate-700/30 transition-all duration-300">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h3 class="text-xl font-bold text-white mb-2">DeFi Revolution</h3>
+                    <p class="text-slate-300 text-sm mb-4">Revolutionary DeFi protocol with privacy-first approach using advanced encryption.</p>
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Progress</span>
+                            <span class="text-white font-semibold">75%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs mb-4">
+                        <div><span class="text-slate-400">Raised:</span><br><span class="text-white font-bold">Private</span></div>
+                        <div><span class="text-slate-400">Investors:</span><br><span class="text-white font-bold">247</span></div>
+                        <div><span class="text-slate-400">Days Left:</span><br><span class="text-white font-bold">15</span></div>
+                    </div>
+                    <button class="btn-primary w-full py-3 rounded-xl font-semibold" onclick="investPrivately(1)">
+                        Invest Privately
+                    </button>
+                </div>
+
+                <div class="card rounded-2xl p-6 hover:bg-slate-700/30 transition-all duration-300">
+                    <div class="text-4xl mb-4">🔐</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Privacy Protocol</h3>
+                    <p class="text-slate-300 text-sm mb-4">Next-generation privacy protocol enabling confidential transactions at scale.</p>
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Progress</span>
+                            <span class="text-white font-semibold">89%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style="width: 89%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs mb-4">
+                        <div><span class="text-slate-400">Raised:</span><br><span class="text-white font-bold">Private</span></div>
+                        <div><span class="text-slate-400">Investors:</span><br><span class="text-white font-bold">156</span></div>
+                        <div><span class="text-slate-400">Days Left:</span><br><span class="text-white font-bold">8</span></div>
+                    </div>
+                    <button class="btn-primary w-full py-3 rounded-xl font-semibold" onclick="investPrivately(2)">
+                        Invest Privately
+                    </button>
+                </div>
+
+                <div class="card rounded-2xl p-6 hover:bg-slate-700/30 transition-all duration-300">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Lightning DEX</h3>
+                    <p class="text-slate-300 text-sm mb-4">High-speed decentralized exchange with built-in privacy protection mechanisms.</p>
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Progress</span>
+                            <span class="text-white font-semibold">62%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style="width: 62%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs mb-4">
+                        <div><span class="text-slate-400">Raised:</span><br><span class="text-white font-bold">Private</span></div>
+                        <div><span class="text-slate-400">Investors:</span><br><span class="text-white font-bold">392</span></div>
+                        <div><span class="text-slate-400">Days Left:</span><br><span class="text-white font-bold">22</span></div>
+                    </div>
+                    <button class="btn-primary w-full py-3 rounded-xl font-semibold" onclick="investPrivately(3)">
+                        Invest Privately
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600/10 to-purple-600/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-6">
+                Ready to Launch Your
+                <span class="text-gradient block">Private Campaign?</span>
+            </h2>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto mb-8">
+                Join the privacy revolution in fundraising. Create your campaign with complete 
+                confidentiality and reach investors worldwide.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg" onclick="createProject()">
+                    Launch Campaign
+                </button>
+                <button class="px-8 py-4 bg-slate-700/50 hover:bg-slate-600/50 text-white rounded-xl font-semibold text-lg border border-slate-600" onclick="accessDEX()">
+                    Access DEX
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/95 border-t border-slate-700/50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-black text-lg">CFN</span>
+                    </div>
+                    <span class="text-xl font-black text-white">CryptoFund Nexus</span>
+                </div>
+                <p class="text-slate-400 text-sm text-center md:text-right">
+                    © 2024 CryptoFund Nexus. Built with ❤️ for privacy-focused DeFi.<br>
+                    <span class="text-purple-400">Powered by Zama FHE</span> • <span class="text-blue-400">Built on Ethereum</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Wallet Connection -->
+    <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-white mb-6">Connect Your Wallet</h3>
+            <div class="space-y-4">
+                <button class="w-full p-4 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center space-x-4 transition-colors" onclick="connectMetaMask()">
+                    <div class="w-8 h-8 bg-orange-500 rounded-lg"></div>
+                    <span class="text-white font-semibold">MetaMask</span>
+                </button>
+                <button class="w-full p-4 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center space-x-4 transition-colors" onclick="connectWalletConnect()">
+                    <div class="w-8 h-8 bg-blue-500 rounded-lg"></div>
+                    <span class="text-white font-semibold">WalletConnect</span>
+                </button>
+            </div>
+            <button class="mt-6 w-full py-3 text-slate-400 hover:text-white transition-colors" onclick="closeWalletModal()">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for Investment -->
+    <div id="investmentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-white mb-6">Private Investment</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-300 mb-2">Investment Amount (ETH)</label>
+                    <input type="number" class="w-full p-4 bg-slate-700 border border-slate-600 rounded-xl text-white" placeholder="0.0" min="0.1" step="0.1">
+                    <p class="text-xs text-slate-400 mt-1">Min: 0.1 ETH | Max: 10 ETH</p>
+                </div>
+                <div class="bg-blue-600/10 border border-blue-500/20 rounded-lg p-4">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-blue-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <div>
+                            <div class="text-sm font-medium text-blue-400">FHE Encryption</div>
+                            <div class="text-xs text-slate-400 mt-1">Your investment will be encrypted using Zama FHE</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary w-full py-4 rounded-xl font-semibold text-lg" onclick="processInvestment()">
+                    Invest Privately
+                </button>
+                <button class="w-full py-3 text-slate-400 hover:text-white transition-colors" onclick="closeInvestmentModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function connectWallet() {
+            document.getElementById('walletModal').classList.remove('hidden');
+        }
+
+        function closeWalletModal() {
+            document.getElementById('walletModal').classList.add('hidden');
+        }
+
+        function investPrivately(projectId) {
+            document.getElementById('investmentModal').classList.remove('hidden');
+        }
+
+        function closeInvestmentModal() {
+            document.getElementById('investmentModal').classList.add('hidden');
+        }
+
+        // Wallet connection functions
+        function connectMetaMask() {
+            if (typeof window.ethereum !== 'undefined') {
+                window.ethereum.request({ method: 'eth_requestAccounts' })
+                .then(() => {
+                    alert('MetaMask connected successfully! Welcome to CryptoFund Nexus.');
+                    closeWalletModal();
+                })
+                .catch((error) => {
+                    alert('Failed to connect MetaMask: ' + error.message);
+                });
+            } else {
+                alert('MetaMask is not installed. Please install MetaMask to continue.');
+            }
+        }
+
+        function connectWalletConnect() {
+            alert('WalletConnect integration coming soon!');
+            closeWalletModal();
+        }
+
+        // Investment function
+        function processInvestment() {
+            alert('Private investment processed! Your investment amount has been encrypted using FHE technology.');
+            closeInvestmentModal();
+        }
+
+        // Navigation functions
+        function exploreProjects() {
+            alert('Explore Projects - Navigate to projects page to see all active fundraising campaigns with privacy protection.');
+        }
+
+        function createProject() {
+            alert('Create Project - Launch your own privacy-preserving fundraising campaign.');
+        }
+
+        function accessDEX() {
+            alert('Access Confidential DEX - Trade tokens privately with encrypted order books.');
+        }
+
+        // Show demo notification
+        setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg z-50 max-w-sm';
+            notification.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-blue-200 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <div class="font-semibold">CryptoFund Nexus Demo</div>
+                        <div class="text-sm text-blue-200 mt-1">This is a demonstration of the privacy-preserving fundraising platform. Click "Connect Wallet" to interact with the demo.</div>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="mt-2 text-xs text-blue-200 hover:text-white">Dismiss</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto remove after 10 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 10000);
+        }, 2000);
+    </script>
+</body>
+</html>

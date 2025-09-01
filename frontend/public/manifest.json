@@ -1,0 +1,89 @@
+{
+  "short_name": "CryptoFund Nexus",
+  "name": "CryptoFund Nexus - Privacy-Preserving Fundraising Platform",
+  "description": "Advanced privacy-preserving fundraising platform with confidential DEX integration using Zama FHE",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0F172A",
+  "background_color": "#0F172A",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "productivity", "business"],
+  "lang": "en-US",
+  "scope": "/",
+  "id": "cryptofund-nexus",
+  "shortcuts": [
+    {
+      "name": "Browse Projects",
+      "short_name": "Projects",
+      "description": "Browse active fundraising projects",
+      "url": "/projects",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Create Project",
+      "short_name": "Create",
+      "description": "Launch a new fundraising campaign",
+      "url": "/create",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Confidential DEX",
+      "short_name": "DEX",
+      "description": "Access the confidential exchange",
+      "url": "/dex",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your investments and projects",
+      "url": "/dashboard",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Homepage showcasing featured projects"
+    },
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "414x896",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile view of project details"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://cryptofund-nexus.example.com"
+    }
+  ],
+  "prefer_related_applications": false
+}
